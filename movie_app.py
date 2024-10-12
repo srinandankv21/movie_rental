@@ -1,80 +1,71 @@
-# movie_app.py
+# security_system.py
 
-from datetime import date
+from datetime import datetime
 
-class Review:
-    def __init__(self, review_id, movie_id, user_id, rating, review_text):
-        self.review_id = review_id
-        self.movie_id = movie_id
-        self.user_id = user_id
-        self.rating = rating
-        self.review_text = review_text
+class Person:
+    def __init__(self, person_id):
+        self.person_id = person_id
+        self.is_family_member = False
+        self.is_visitor = False
 
-    def get_review_details(self):
-        return {
-            "review_id": self.review_id,
-            "movie_id": self.movie_id,
-            "user_id": self.user_id,
-            "rating": self.rating,
-            "review_text": self.review_text,
-        }
+class FamilyMember(Person):
+    def __init__(self, person_id, name):
+        super().__init__(person_id)
+        self.name = name
+        self.is_family_member = True
 
+class Visitor(Person):
+    def __init__(self, person_id, name, scheduled_time):
+        super().__init__(person_id)
+        self.name = name
+        self.scheduled_time = scheduled_time
+        self.is_visitor = True
 
-class Movie:
-    def __init__(self, movie_id, title, description, release_date):
-        self.movie_id = movie_id
-        self.title = title
-        self.description = description
-        self.release_date = release_date
-        self.rating = 0.0
-        self.reviews = []
+class SecurityAgent:
+    def __init__(self):
+        self.known_people = []
 
-    def add_review(self, review):
-        self.reviews.append(review)
-        self.calculate_average_rating()
+    def capture_image(self):
+        return "Image captured."
 
-    def calculate_average_rating(self):
-        if not self.reviews:
-            self.rating = 0.0
-        else:
-            total = sum(review.rating for review in self.reviews)
-            self.rating = total / len(self.reviews)
+    def check_database(self, person):
+        for known_person in self.known_people:
+            if known_person.person_id == person.person_id:
+                return known_person
+        return None
 
+    def warn_family_and_visitors(self, unknown_person):
+        return f"Warning: Unknown person detected - {unknown_person.person_id}"
 
-class User:
-    def __init__(self, user_id, username, password, email):
-        self.user_id = user_id
-        self.username = username
-        self.password = password
-        self.email = email
-        self.favorites = []
+class Jane:
+    @staticmethod
+    def confirm_identity(person):
+        return f"Jane is confirming the identity of {person.person_id}."
 
-    def search_movies(self, movies, keyword):
-        return [movie for movie in movies if keyword.lower() in movie.title.lower()]
+class Homeowner:
+    @staticmethod
+    def notify(unknown_person):
+        return f"Homeowner notified about unknown person: {unknown_person.person_id}"
 
-    def add_to_favorites(self, movie):
-        if movie not in self.favorites:
-            self.favorites.append(movie)
+class Police:
+    @staticmethod
+    def report_incident(unknown_person):
+        return f"Reported incident of unknown person: {unknown_person.person_id}"
 
-    def rate_movie(self, movie, rating, review_text):
-        movie.add_review(Review(f"rev-{len(movie.reviews) + 1}", movie.movie_id, self.user_id, rating, review_text))
+class EmergencyServices:
+    @staticmethod
+    def escalate_alert(unknown_person):
+        return f"Alert escalated to Emergency Services for {unknown_person.person_id}."
 
-
-class Admin:
-    def __init__(self, admin_id, username, password):
-        self.admin_id = admin_id
-        self.username = username
-        self.password = password
-
-    def manage_movies(self, movie_list, movie):
-        movie_list.append(movie)
-
-    def delete_movie(self, movie_list, movie_id):
-        movie_list[:] = [movie for movie in movie_list if movie.movie_id != movie_id]
-
-
-# Sample movie data (in-memory)
-movies = [
-    Movie("1", "Inception", "A mind-bending thriller", date(2010, 7, 16)),
-    Movie("2", "Interstellar", "A journey through space and time", date(2014, 11, 7)),
+# Sample known people for demonstration
+known_family = [
+    FamilyMember("1", "Alice"),
+    FamilyMember("2", "Bob")
 ]
+
+known_visitors = [
+    Visitor("3", "Charlie", datetime.now())
+]
+
+security_agent = SecurityAgent()
+security_agent.known_people.extend(known_family + known_visitors)
